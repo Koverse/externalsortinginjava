@@ -2,8 +2,8 @@ package com.google.code.externalsorting.csv;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class CsvExternalSortTest {
@@ -187,7 +187,7 @@ public class CsvExternalSortTest {
 
 	}
 
-	@After
+	@AfterAll
 	public void onTearDown() {
 		if(outputfile.exists()) {
 			outputfile.delete();

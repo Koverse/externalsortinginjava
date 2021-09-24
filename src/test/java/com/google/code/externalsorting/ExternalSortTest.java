@@ -1,28 +1,48 @@
 package com.google.code.externalsorting;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.*;
+import org.github.jamm.MemoryMeter;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.github.jamm.*;
 
 /**
  * Unit test for simple App.
@@ -53,7 +73,7 @@ public class ExternalSortTest {
     /**
      * @throws Exception
      */
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
         this.fileList = new ArrayList<File>(3);
         this.file1 = new File(this.getClass().getClassLoader()
@@ -76,7 +96,7 @@ public class ExternalSortTest {
     /**
      * @throws Exception
      */
-    @After
+    @AfterAll
     public void tearDown() throws Exception {
         this.file1 = null;
         this.file2 = null;
@@ -208,8 +228,7 @@ public class ExternalSortTest {
                 result.add(line);
             }
         }
-        assertArrayEquals(Arrays.toString(result.toArray()), EXPECTED_MERGE_RESULTS,
-                          result.toArray());
+        assertArrayEquals( EXPECTED_MERGE_RESULTS, result.toArray(), Arrays.toString(result.toArray()));
     }
 
     @Test
@@ -234,8 +253,7 @@ public class ExternalSortTest {
                 result.add(line);
             }
         }
-        assertArrayEquals(Arrays.toString(result.toArray()), EXPECTED_MERGE_DISTINCT_RESULTS,
-                          result.toArray());
+        assertArrayEquals( EXPECTED_MERGE_DISTINCT_RESULTS, result.toArray(), Arrays.toString(result.toArray()));
     }
 
     @Test
@@ -262,7 +280,7 @@ public class ExternalSortTest {
                 result.add(line);
             }
         }
-        assertArrayEquals(Arrays.toString(result.toArray()), EXPECTED_HEADER_RESULTS, result.toArray());
+        assertArrayEquals(EXPECTED_HEADER_RESULTS, result.toArray(),Arrays.toString(result.toArray()));
     }
 
     @Test
@@ -288,8 +306,8 @@ public class ExternalSortTest {
                 result.add(line);
             }
         }
-        assertArrayEquals(Arrays.toString(result.toArray()), EXPECTED_SORT_RESULTS,
-                          result.toArray());
+        assertArrayEquals( EXPECTED_SORT_RESULTS,
+                          result.toArray(), Arrays.toString(result.toArray()));
     }
 
     @Test
@@ -318,8 +336,7 @@ public class ExternalSortTest {
             result.add(line);
         }
         bf.close();
-        assertArrayEquals(Arrays.toString(result.toArray()),
-                          EXPECTED_DISTINCT_RESULTS, result.toArray());
+        assertArrayEquals(EXPECTED_DISTINCT_RESULTS, result.toArray(),Arrays.toString(result.toArray()));
     }
 
     @Test
@@ -335,7 +352,7 @@ public class ExternalSortTest {
         assertEquals(1, listOfFiles.size());
 
         ArrayList<String> result = readLines(listOfFiles.get(0));
-        assertArrayEquals(Arrays.toString(result.toArray()),EXPECTED_MERGE_DISTINCT_RESULTS, result.toArray());
+        assertArrayEquals(EXPECTED_MERGE_DISTINCT_RESULTS, result.toArray(), Arrays.toString(result.toArray()));
     }
 
     /**
@@ -386,7 +403,7 @@ public class ExternalSortTest {
         ArrayList<String> result = readLines(out);
 
         assertEquals(12, result.size());
-        assertArrayEquals(Arrays.toString(result.toArray()),EXPECTED_HEADER_RESULTS, result.toArray());
+        assertArrayEquals(EXPECTED_HEADER_RESULTS, result.toArray(),Arrays.toString(result.toArray()));
 
     }
 
@@ -413,7 +430,7 @@ public class ExternalSortTest {
      *
      * @throws IOException
      */
-    @Ignore("This test takes too long to execute")
+    @Disabled("This test takes too long to execute")
     @Test
     public void sortVeryLargeFile() throws IOException {
         final Path veryLargeFile = getTestFile();
@@ -476,7 +493,7 @@ public class ExternalSortTest {
             wasCalled.set(true);
             return lhsLong.compareTo(rhsLong);
         });
-        assertTrue("The custom comparator was not called!", wasCalled.get());
+        assertTrue( wasCalled.get(), "The custom comparator was not called!");
         Iterator<Long> idIter = sortedIds.iterator();
         try (FileReader fr = new FileReader(pathSorted.toFile());
              BufferedReader bw = new BufferedReader(fr)) {
